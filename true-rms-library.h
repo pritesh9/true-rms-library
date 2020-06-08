@@ -17,22 +17,28 @@
 
 #include <math.h>
 
-#ifndef TRUE_RMS_LIB_NO_OF_SAMPLLES
-#define TRUE_RMS_LIB_NO_OF_SAMPLLES 10
-#warning "TRUE_RMS_LIB_NO_OF_SAMPLLES not defined (default value = 10)"
+#ifndef TRUE_RMS_LIB_NO_OF_SAMPLES
+#define TRUE_RMS_LIB_NO_OF_SAMPLES 10
+#warning "TRUE_RMS_LIB_NO_OF_SAMPLES not defined (default value = 10)"
 #endif
 
 volatile unsigned int true_rms_lib_frame_pos = 0;
 volatile double true_rms_lib_sum_of_square = 0;
-volatile double true_rms_lib_window[TRUE_RMS_LIB_NO_OF_SAMPLLES] = {[0 ...(TRUE_RMS_LIB_NO_OF_SAMPLLES - 1)] = 0.0};
+volatile double true_rms_lib_window[TRUE_RMS_LIB_NO_OF_SAMPLES] = {[0 ...(TRUE_RMS_LIB_NO_OF_SAMPLES - 1)] = 0.0};
 
+/**
+  * @brief  Replaces oldest sample with new sample and calculates new true rms value.
+            Make sure that this function called periodically for each new sample.
+  * @param  sample: The new sample value
+  * @retval The new calculated true rms value
+  */
 double get_true_rms(double sample)
 {
     true_rms_lib_sum_of_square = true_rms_lib_sum_of_square - pow(true_rms_lib_window[true_rms_lib_frame_pos], 2);
     true_rms_lib_sum_of_square = true_rms_lib_sum_of_square + pow(sample, 2);
     true_rms_lib_window[true_rms_lib_frame_pos] = sample;
 
-    if (true_rms_lib_frame_pos >= TRUE_RMS_LIB_NO_OF_SAMPLLES)
+    if (true_rms_lib_frame_pos >= TRUE_RMS_LIB_NO_OF_SAMPLES)
     {
         true_rms_lib_frame_pos++;
     }
